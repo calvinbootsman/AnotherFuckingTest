@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Microsoft.WindowsAzure.Storage;
+using Microsoft.WindowsAzure.Storage.Table;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -40,12 +42,33 @@ namespace AnotherFuckingTest
             });
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private async void Button_Click(object sender, RoutedEventArgs e)
         {
-            for (int i = 0; i < 100; i++)
+            for (int i = 0; i < 1; i++)
             {
                 Task.Run(async () => { await AzureIoTHub.SendDeviceToCloudMessageAsync(); });
             }
+
+            // Retrieve the storage account from the connection string.
+            CloudStorageAccount storageAccount = CloudStorageAccount.Parse("DefaultEndpointsProtocol=https;AccountName=group8;AccountKey=FTPP2o14jNuGOI+YizAdfeWNQWXA4ult7M4ngYx6k8R0Hsxj/EeE1uASuQancc2dvvJksI7uf/jpx8QWgipu6Q==;EndpointSuffix=core.windows.net");
+                        DeviceStatus deviceStatus = new DeviceStatus("DeviceCalvin", "0" );
+            CloudTableClient tableClient = storageAccount.CreateCloudTableClient();
+            CloudTable table = tableClient.GetTableReference("Test");
+
+            // Create the TableOperation object that inserts the customer entity.
+            TableOperation insertOperation = TableOperation.Insert(deviceStatus);
+
+            // Execute the insert operation.
+           await table.ExecuteAsync(insertOperation);
         }
     }
+}
+public class DeviceStatus : TableEntity
+{
+    public DeviceStatus(string device, string status)
+    {
+        this.PartitionKey = device;
+        this.RowKey = status;
+    }
+    public DeviceStatus() { }
 }

@@ -28,10 +28,12 @@ namespace AnotherFuckingTest
     /// </summary>
     public sealed partial class MainPage : Page
     {
+        List<AzureDevices> list =new List<AzureDevices>();
         public MainPage()
         {
             this.InitializeComponent();
-            Task.Run(async () =>
+            
+          /*  Task.Run(async () =>
             {
                 while (true)
                 {
@@ -39,10 +41,11 @@ namespace AnotherFuckingTest
                     Debug.WriteLine(message);
                     await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => { textBlock.Text += message; });
                 }
-            });
+            });*/
+            
         }
 
-        private async void Button_Click(object sender, RoutedEventArgs e)
+        /*private async void Button_Click(object sender, RoutedEventArgs e)
         {
             for (int i = 0; i < 1; i++)
             {
@@ -50,16 +53,59 @@ namespace AnotherFuckingTest
             }
 
             // Retrieve the storage account from the connection string.
-            CloudStorageAccount storageAccount = CloudStorageAccount.Parse("DefaultEndpointsProtocol=https;AccountName=group8;AccountKey=FTPP2o14jNuGOI+YizAdfeWNQWXA4ult7M4ngYx6k8R0Hsxj/EeE1uASuQancc2dvvJksI7uf/jpx8QWgipu6Q==;EndpointSuffix=core.windows.net");
-                        DeviceStatus deviceStatus = new DeviceStatus("DeviceCalvin", "0" );
-            CloudTableClient tableClient = storageAccount.CreateCloudTableClient();
-            CloudTable table = tableClient.GetTableReference("Test");
+            var myAzureClass = new MyAzureClass();
+            var table = myAzureClass.GetCloudTable();
 
-            // Create the TableOperation object that inserts the customer entity.
-            TableOperation insertOperation = TableOperation.Insert(deviceStatus);
+            AzureDevices deviceStatus = new AzureDevices();
+            deviceStatus.DeviceId = "DeviceCalvin";
+            deviceStatus.Status = false;
+            deviceStatus.AssignRowKey();
+            deviceStatus.AssignPartitionKey();
+            
+            AzureDevices deviceRetrieve =await AzureDevices.RetrieveRecord(table, "DeviceCalvin");
+            if (deviceRetrieve == null)
+            {
+                TableOperation tableOperation = TableOperation.Insert(deviceStatus);
+                await table.ExecuteAsync(tableOperation);
+                Debug.WriteLine("Record inserted");
+            }
+            else
+            {
+                Debug.WriteLine("Record exists");
+            }
+        }
+        */
+        private async void AddDeviceBtn_Click(object sender, RoutedEventArgs e)
+        {
+            MyAzureClass myAzureClass = new MyAzureClass();
+            var AddedDevice = await myAzureClass.AddDeviceToCloud(AddDeviceBox.Text, StatusCheck.IsChecked);
+            list.Add(AddedDevice);
+            DeviceList.ItemsSource = null;
+            DeviceList.ItemsSource = list;
+        }
 
-            // Execute the insert operation.
-           await table.ExecuteAsync(insertOperation);
+        private async void GetDevicesButton_Click(object sender, RoutedEventArgs e)
+        {
+            MyAzureClass myAzureClass = new MyAzureClass();
+            list = await myAzureClass.GetDevices();
+            foreach(AzureDevices device in list)
+            {
+                Debug.WriteLine("Device ID: " + device.DeviceId);           
+            }
+            DeviceList.ItemsSource = list;
+        }
+
+        private void DeleteDeviceButton_Click(object sender, RoutedEventArgs e)
+        {
+            //int Index = DeviceList.SelectedIndex;
+            AzureDevices SelectedDevice = (AzureDevices)DeviceList.SelectedItems[0];
+            MyAzureClass myAzureClass = new MyAzureClass();            
+            myAzureClass.DeleteRecordinTable(SelectedDevice.DeviceId);
+
+            var index = DeviceList.Items.IndexOf(DeviceList.SelectedItem);
+            list.RemoveAt(index);
+            DeviceList.ItemsSource = null;
+            DeviceList.ItemsSource = list;
         }
     }
 }
@@ -72,3 +118,6 @@ public class DeviceStatus : TableEntity
     }
     public DeviceStatus() { }
 }
+
+
+

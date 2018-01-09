@@ -4,12 +4,32 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:AnotherFuckingTest"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d" Width="456" Height="226">
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" Height="401"
+    >
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <Button Content="Send" HorizontalAlignment="Left" Margin="10,140,0,0" VerticalAlignment="Top" Click="Button_Click" Width="411"/>
-        <TextBox x:Name="textBlock" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Height="125" Width="411"/>
+        <TextBox x:Name="AddDeviceBox" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="151"/>
+        <Button x:Name="AddDeviceBtn" Content="Add device" HorizontalAlignment="Left" Margin="166,10,0,0" VerticalAlignment="Top" Click="AddDeviceBtn_Click"/>
+        <Button x:Name="GetDevicesButton" Content="Get devices" HorizontalAlignment="Left" Margin="10,360,0,0" VerticalAlignment="Top" RenderTransformOrigin="-0.015,1.531" Width="95" Click="GetDevicesButton_Click"/>
+        <Button x:Name="DeleteDeviceButton" Content="Delete device" HorizontalAlignment="Left" Margin="203,73,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.462,-0.062" Click="DeleteDeviceButton_Click"/>
+        <Border BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="282" Margin="10,73,0,0" VerticalAlignment="Top" Width="188">
+            <ListView x:Name="DeviceList" HorizontalAlignment="Left" Height="262" Margin="9,9,0,0" VerticalAlignment="Top" Width="168">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <Border BorderBrush="Black" BorderThickness="1">
+                                <TextBlock Text="{Binding DeviceId}" />
+                            </Border>
+                            <TextBlock Text="{Binding Status}" HorizontalAlignment="Right"/>                              
+                        </StackPanel>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </Border>
+        <CheckBox x:Name="StatusCheck" Content="Status" HorizontalAlignment="Left" Margin="265,10,0,0" VerticalAlignment="Top"/>
+        <RadioButton x:Name="TrueRadio" Content="True" HorizontalAlignment="Left" Margin="203,110,0,0" VerticalAlignment="Top"/>
+        <RadioButton x:Name="FalseRadio" Content="False" HorizontalAlignment="Left" Margin="203,141,0,0" VerticalAlignment="Top"/>
+        <Button x:Name="UpdateDevice" Content="Update Device" HorizontalAlignment="Left" Margin="203,178,0,0" VerticalAlignment="Top"/>
 
     </Grid>
 </Page>

@@ -1,4 +1,5 @@
-﻿using Microsoft.WindowsAzure.Storage.Auth;
+﻿using Microsoft.WindowsAzure.Storage;
+using Microsoft.WindowsAzure.Storage.Auth;
 using Microsoft.WindowsAzure.Storage.Blob;
 using System;
 using System.Collections.Generic;
@@ -26,7 +27,6 @@ namespace AnotherFuckingTest
     {
         private static readonly StorageCredentials cred = new StorageCredentials("group8", "FTPP2o14jNuGOI+YizAdfeWNQWXA4ult7M4ngYx6k8R0Hsxj/EeE1uASuQancc2dvvJksI7uf/jpx8QWgipu6Q==");
         public static readonly CloudBlobContainer container = new CloudBlobContainer(new Uri("https://group8.table.core.windows.net/Test"), cred);
-
         /// <summary>
         /// Initializes the singleton application object.  This is the first line of authored code
         /// executed, and as such is the logical equivalent of main() or WinMain().

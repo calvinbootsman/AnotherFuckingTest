@@ -32,53 +32,15 @@ namespace AnotherFuckingTest
         public MainPage()
         {
             this.InitializeComponent();
-            
-          /*  Task.Run(async () =>
-            {
-                while (true)
-                {
-                    var message = await AzureIoTHub.ReceiveCloudToDeviceMessageAsync();
-                    Debug.WriteLine(message);
-                    await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => { textBlock.Text += message; });
-                }
-            });*/
-            
+            var sender = new object();
+            var e = new RoutedEventArgs();
+            GetDevicesButton_Click(sender, e);
         }
 
-        /*private async void Button_Click(object sender, RoutedEventArgs e)
-        {
-            for (int i = 0; i < 1; i++)
-            {
-                Task.Run(async () => { await AzureIoTHub.SendDeviceToCloudMessageAsync(); });
-            }
-
-            // Retrieve the storage account from the connection string.
-            var myAzureClass = new MyAzureClass();
-            var table = myAzureClass.GetCloudTable();
-
-            AzureDevices deviceStatus = new AzureDevices();
-            deviceStatus.DeviceId = "DeviceCalvin";
-            deviceStatus.Status = false;
-            deviceStatus.AssignRowKey();
-            deviceStatus.AssignPartitionKey();
-            
-            AzureDevices deviceRetrieve =await AzureDevices.RetrieveRecord(table, "DeviceCalvin");
-            if (deviceRetrieve == null)
-            {
-                TableOperation tableOperation = TableOperation.Insert(deviceStatus);
-                await table.ExecuteAsync(tableOperation);
-                Debug.WriteLine("Record inserted");
-            }
-            else
-            {
-                Debug.WriteLine("Record exists");
-            }
-        }
-        */
         private async void AddDeviceBtn_Click(object sender, RoutedEventArgs e)
         {
             MyAzureClass myAzureClass = new MyAzureClass();
-            var AddedDevice = await myAzureClass.AddDeviceToCloud(AddDeviceBox.Text, StatusCheck.IsChecked);
+            var AddedDevice = await myAzureClass.AddDeviceToCloud(AddDeviceBox.Text, StatusCheck.IsChecked.Value);
             list.Add(AddedDevice);
             DeviceList.ItemsSource = null;
             DeviceList.ItemsSource = list;
@@ -106,6 +68,28 @@ namespace AnotherFuckingTest
             list.RemoveAt(index);
             DeviceList.ItemsSource = null;
             DeviceList.ItemsSource = list;
+        }
+
+        private void UpdateDevice_Click(object sender, RoutedEventArgs e)
+        {
+            AzureDevices SelectedDevice = (AzureDevices)DeviceList.SelectedItems[0];            
+            if (TrueRadio.IsChecked.Value) SelectedDevice.Status = true; else { SelectedDevice.Status = false; }
+
+            var index = DeviceList.Items.IndexOf(DeviceList.SelectedItem);
+            list.RemoveAt(index);
+            list.Insert(index, SelectedDevice);
+            DeviceList.ItemsSource = null;
+            DeviceList.ItemsSource = list;
+
+            MyAzureClass myAzureClass = new MyAzureClass();
+            myAzureClass.UpdateRecordInTable(SelectedDevice);
+        }
+
+        private async void SendButton_Click(object sender, RoutedEventArgs e)
+        {            
+            await AzureIoTHub.SendDeviceToCloudMessageAsync();
+            var message = await AzureIoTHub.ReceiveCloudToDeviceMessageAsync();
+            Debug.WriteLine("Message: " + message);
         }
     }
 }

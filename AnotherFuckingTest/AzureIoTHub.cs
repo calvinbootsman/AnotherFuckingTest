@@ -2,6 +2,7 @@
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Azure.Devices.Client;
+using Microsoft.Azure.Devices;
 using Microsoft.Azure.Devices.Shared;
 using Microsoft.WindowsAzure; // Namespace for CloudConfigurationManager
 using Microsoft.WindowsAzure.Storage; // Namespace for CloudStorageAccount
@@ -17,9 +18,9 @@ class AzureIoTHub
             // create Azure IoT Hub client from embedded connection string
             deviceClient = DeviceClient.CreateFromConnectionString(deviceConnectionString, TransportType.Mqtt);
         }
-
+        
     }
-
+    
     static DeviceClient deviceClient = null;
 
     //
@@ -30,7 +31,7 @@ class AzureIoTHub
     
     //
     // To monitor messages sent to device "kraaa" use iothub-explorer as follows:
-    //    iothub-explorer monitor-events --login HostName=EPDEgroup8Hanze.azure-devices.net;SharedAccessKeyName=service;SharedAccessKey=MDNZ9Uwt0UoLUn+UXWrDuGXhf4JT4xVxHygRpzdhprU= "test"
+    //    iothub-explorer monitor-events --login HostName=EPDEgroup8Hanze.azure-devices.net;SharedAccessKey                                          Name=service;SharedAccessKey=MDNZ9Uwt0UoLUn+UXWrDuGXhf4JT4xVxHygRpzdhprU= "test"
     //
 
     // Refer to http://aka.ms/azure-iot-hub-vs-cs-2017-wiki for more information on Connected Service for Azure IoT Hub
@@ -46,6 +47,7 @@ class AzureIoTHub
         var message = new Message(Encoding.ASCII.GetBytes(str));
 
         await deviceClient.SendEventAsync(message);
+        
     }
 
     public static async Task<string> ReceiveCloudToDeviceMessageAsync()

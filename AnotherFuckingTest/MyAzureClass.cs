@@ -75,6 +75,22 @@ namespace AnotherFuckingTest
             }
         }
 
+        public async void UpdateRecordInTable(AzureDevices device)
+        {
+            var table = GetCloudTable();
+
+            AzureDevices devices = await AzureDevices.RetrieveRecord(table,device.DeviceId );
+            if (devices != null)
+            {
+                TableOperation tableOperation = TableOperation.Replace(device);
+                await table.ExecuteAsync(tableOperation);
+                Console.WriteLine("Record updated");
+            }
+            else
+            {
+                Console.WriteLine("Record does not exists");
+            }
+        }
     }
 
     public class AzureDevices : TableEntity

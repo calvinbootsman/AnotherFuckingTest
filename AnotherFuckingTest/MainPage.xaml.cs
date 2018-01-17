@@ -19,6 +19,7 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using Nito.AsyncEx;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -30,6 +31,10 @@ namespace AnotherFuckingTest
     public sealed partial class MainPage : Page
     {
         List<AzureDevices> list =new List<AzureDevices>();
+        AzureDevices MainDevice = new AzureDevices {
+            DeviceId = "CalvinSimulator",
+            Status = false
+        };
         public MainPage()
         {
             this.InitializeComponent();
@@ -37,6 +42,12 @@ namespace AnotherFuckingTest
             var e = new RoutedEventArgs();
             GetDevicesButton_Click(sender, e);
             ListenForMessages();
+
+            MyAzureClass myAzureClass = new MyAzureClass();
+            Task.Run(async () => { MainDevice = await myAzureClass.AddDeviceToCloud(MainDevice.DeviceId, MainDevice.Status); }).GetAwaiter().GetResult();
+            //AsyncContext.Run(() => );
+            while (MainDevice.PartitionKey == null) { }
+            DeviceStatusButton.IsEnabled = true;
         }
 
         private async void AddDeviceBtn_Click(object sender, RoutedEventArgs e)
@@ -129,6 +140,39 @@ namespace AnotherFuckingTest
             {
                 UpdateDevice.IsEnabled = false;
                 DeleteDeviceButton.IsEnabled = false;
+            }
+        }
+
+        private void DeviceStatusButton_PointerPressed(object sender, PointerRoutedEventArgs e)
+        {
+            MainDevice.Status = true;
+            MyAzureClass myAzureClass = new MyAzureClass();
+            myAzureClass.UpdateRecordInTable(MainDevice);
+            AzureIoTHub.SendDeviceToCloudMessageAsync();
+            Debug.WriteLine("Button Pressed");
+        }
+
+        private void DeviceStatusButton_PointerEntered(object sender, PointerRoutedEventArgs e)
+        {
+            if (DeviceStatusButton.IsEnabled)
+            {
+                MainDevice.Status = true;
+                MyAzureClass myAzureClass = new MyAzureClass();
+                myAzureClass.UpdateRecordInTable(MainDevice);
+                AzureIoTHub.SendDeviceToCloudMessageAsync();
+                Debug.WriteLine("Button Pressed");
+            }
+        }
+
+        private void DeviceStatusButton_PointerExited(object sender, PointerRoutedEventArgs e)
+        {
+            if (DeviceStatusButton.IsEnabled == false)
+            {
+                MainDevice.Status = false;
+                MyAzureClass myAzureClass = new MyAzureClass();
+                myAzureClass.UpdateRecordInTable(MainDevice);
+                AzureIoTHub.SendDeviceToCloudMessageAsync();
+                Debug.WriteLine("Button Released");
             }
         }
     }

@@ -26,12 +26,18 @@
                 </ListView.ItemTemplate>
             </ListView>
         </Border>
-        <CheckBox x:Name="StatusCheck" Content="Status" HorizontalAlignment="Left" Margin="265,10,0,0" VerticalAlignment="Top"/>
+        <CheckBox x:Name="StatusCheck" Content="Status" HorizontalAlignment="Left" Margin="265,10,0,0" VerticalAlignment="Top" Width="58"/>
         <RadioButton x:Name="TrueRadio" Content="True" HorizontalAlignment="Left" Margin="203,110,0,0" VerticalAlignment="Top" IsChecked="True"/>
         <RadioButton x:Name="FalseRadio" Content="False" HorizontalAlignment="Left" Margin="203,141,0,0" VerticalAlignment="Top"/>
         <Button x:Name="UpdateDevice" Content="Update Device" HorizontalAlignment="Left" Margin="203,178,0,0" VerticalAlignment="Top" Click="UpdateDevice_Click" IsEnabled="False"/>
         <Button x:Name="SendButton" Content="Send Message" HorizontalAlignment="Left" Margin="203,360,0,0" VerticalAlignment="Top" Click="SendButton_Click"/>
         <TextBox HorizontalAlignment="Left" Margin="203,215,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="117" Height="140" PlaceholderText="Type here your message"/>
+        <TextBlock HorizontalAlignment="Left" Margin="328,73,0,0" TextWrapping="Wrap" Text="Device name:" VerticalAlignment="Top" FontSize="18" FontWeight="Bold"/>
+        <TextBlock x:Name="DeviceNameBlock" HorizontalAlignment="Left" Margin="328,102,0,0" TextWrapping="Wrap" Text="CalvinSimulator" VerticalAlignment="Top" FontSize="18"/>
+        <ToggleSwitch Header="Device Status
+                      " HorizontalAlignment="Left" Margin="328,147,0,0" VerticalAlignment="Top"/>
+        <Button x:Name="DeviceStatusButton" Content="Not Pressed" HorizontalAlignment="Left" Margin="328,215,0,0" VerticalAlignment="Top" Width="124" PointerPressed="DeviceStatusButton_PointerPressed" PointerEntered="DeviceStatusButton_PointerEntered" PointerExited="DeviceStatusButton_PointerExited" IsEnabled="False"/>
+
 
     </Grid>
 </Page>

@@ -18,11 +18,9 @@ namespace AnotherFuckingTest
                 string str = await AzureIoTHub.ReceiveCloudToDeviceMessageAsync();
                 if (str == "Update")
                 {
-                    Debug.WriteLine("Received: " + str);
                     MainPage main = new MainPage();
                     main.RefreshList();
                 }
-                Debug.WriteLine("Received: " + str);
             }
         }
 
@@ -56,7 +54,7 @@ namespace AnotherFuckingTest
             {
                 Debug.WriteLine("Record exists");
             }
-            return deviceStatus;
+            return deviceRetrieve;
         }
 
         public async Task<List<AzureDevices>> GetDevices()

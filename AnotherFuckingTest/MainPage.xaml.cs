@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
+using System.Threading;
 using Windows.ApplicationModel.Core;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
@@ -35,6 +36,7 @@ namespace AnotherFuckingTest
             var sender = new object();
             var e = new RoutedEventArgs();
             GetDevicesButton_Click(sender, e);
+            ListenForMessages();
         }
 
         private async void AddDeviceBtn_Click(object sender, RoutedEventArgs e)
@@ -78,18 +80,56 @@ namespace AnotherFuckingTest
             var index = DeviceList.Items.IndexOf(DeviceList.SelectedItem);
             list.RemoveAt(index);
             list.Insert(index, SelectedDevice);
-            DeviceList.ItemsSource = null;
-            DeviceList.ItemsSource = list;
+           /* DeviceList.ItemsSource = null;
+            DeviceList.ItemsSource = list;*/
 
             MyAzureClass myAzureClass = new MyAzureClass();
             myAzureClass.UpdateRecordInTable(SelectedDevice);
+            AzureIoTHub.SendDeviceToCloudMessageAsync();
         }
 
         private async void SendButton_Click(object sender, RoutedEventArgs e)
         {            
-            await AzureIoTHub.SendDeviceToCloudMessageAsync();
+            AzureIoTHub.SendDeviceToCloudMessageAsync();
             var message = await AzureIoTHub.ReceiveCloudToDeviceMessageAsync();
             Debug.WriteLine("Message: " + message);
+        }
+
+        public async void RefreshList()
+        {
+            MyAzureClass myAzureClass = new MyAzureClass();
+            list = await myAzureClass.GetDevices();
+            DeviceList.ItemsSource = null;
+            DeviceList.ItemsSource = list;
+        }
+
+        public async void ListenForMessages()
+        {
+            while (true)
+            {
+                string str = await AzureIoTHub.ReceiveCloudToDeviceMessageAsync();
+                if (str == "Update")
+                {
+                    Debug.WriteLine("Received: " + str);
+                    RefreshList();
+                }
+                Debug.WriteLine("Received: " + str);
+            }
+        }
+
+        private void DeviceList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (DeviceList.Items.IndexOf(DeviceList.SelectedItem) > -1)
+            {
+                UpdateDevice.IsEnabled = true;
+                DeleteDeviceButton.IsEnabled = true ;
+                
+            }
+            else
+            {
+                UpdateDevice.IsEnabled = false;
+                DeleteDeviceButton.IsEnabled = false;
+            }
         }
     }
 }

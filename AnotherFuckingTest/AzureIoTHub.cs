@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Azure.Devices.Client;
@@ -8,6 +9,9 @@ using Microsoft.WindowsAzure; // Namespace for CloudConfigurationManager
 using Microsoft.WindowsAzure.Storage; // Namespace for CloudStorageAccount
 using Microsoft.WindowsAzure.Storage.Blob; // Namespace for Blob storage types
 using Microsoft.Azure;
+using System.Diagnostics;
+using AnotherFuckingTest;
+using Newtonsoft.Json;
 
 class AzureIoTHub
 {
@@ -36,18 +40,26 @@ class AzureIoTHub
 
     // Refer to http://aka.ms/azure-iot-hub-vs-cs-2017-wiki for more information on Connected Service for Azure IoT Hub
 
-    public static async Task SendDeviceToCloudMessageAsync()
+    public static async void SendDeviceToCloudMessageAsync()
     {
+        ServiceDeviceStatus deviceStatus = new ServiceDeviceStatus()
+        {
+            SourceDeviceId = "Test",
+            Time = DateTime.Now.ToString("O"),
+            Command = "Update",
+            CommandACK = "0",
+            TargetDeviceId = "test"
+        };
+
         CreateClient();
-#if WINDOWS_UWP
-        var str = "{\"deviceId\":\"test\",\"messageId\":1,\"text\":\"Hello, Cloud from a UWP C# app!\"}";
-#else
-        var str = "{\"deviceId\":\"test\",\"messageId\":1,\"text\":\"Hello, Cloud from a C# app!\"}";
-#endif
-        var message = new Message(Encoding.ASCII.GetBytes(str));
+
+        string messageString = JsonConvert.SerializeObject(deviceStatus, Formatting.Indented);
+
+        var message = new Message(Encoding.ASCII.GetBytes(messageString));
 
         await deviceClient.SendEventAsync(message);
-        
+       /* String Message = await ReceiveCloudToDeviceMessageAsync();
+        Debug.WriteLine("Maybe I can already Receive Stuff: " + Message);*/
     }
 
     public static async Task<string> ReceiveCloudToDeviceMessageAsync()

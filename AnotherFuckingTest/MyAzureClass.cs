@@ -11,7 +11,22 @@ namespace AnotherFuckingTest
 {
     class MyAzureClass
     {
-       public CloudTable GetCloudTable()
+        public static async void ListenForMessages()
+        {
+            while (true)
+            {
+                string str = await AzureIoTHub.ReceiveCloudToDeviceMessageAsync();
+                if (str == "Update")
+                {
+                    Debug.WriteLine("Received: " + str);
+                    MainPage main = new MainPage();
+                    main.RefreshList();
+                }
+                Debug.WriteLine("Received: " + str);
+            }
+        }
+
+        public CloudTable GetCloudTable()
         {
             CloudStorageAccount storageAccount = CloudStorageAccount.Parse("DefaultEndpointsProtocol=https;AccountName=group8;AccountKey=FTPP2o14jNuGOI+YizAdfeWNQWXA4ult7M4ngYx6k8R0Hsxj/EeE1uASuQancc2dvvJksI7uf/jpx8QWgipu6Q==;EndpointSuffix=core.windows.net");
             CloudTableClient tableClient = storageAccount.CreateCloudTableClient();
@@ -137,5 +152,18 @@ namespace AnotherFuckingTest
                 Debug.WriteLine("Record does not exists");
             }
         }
+
+        
     }
+
+    public class ServiceDeviceStatus
+    {
+        public string Time { get; set; }
+        public string SourceDeviceId { get; set; }
+        public string TargetDeviceId { get; set; }
+        public string Command { get; set; }
+        public string CommandACK { get; set; }
+    }
+
+    
 }
